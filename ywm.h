@@ -3,20 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   ywm.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmoussou <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mmoussou <mmoussou@student.42angouleme.fr  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/17 05:36:23 by mmoussou          #+#    #+#             */
-/*   Updated: 2024/01/17 08:39:42 by mmoussou         ###   ########.fr       */
+/*   Updated: 2024/01/17 12:31:49 by mmoussou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef YWM_H
 # define YWM_H
 
+# include "libft.h"
 # include <X11/Xlib.h>
+
+#include <X11/X.h>
+#include <X11/Xcursor/Xcursor.h>
+#include <X11/Xutil.h>
+#include <X11/extensions/Xcomposite.h>
+#include <X11/Xatom.h>
+
+# include <pthread.h>
 # include <stdlib.h>
 # include <stdbool.h>
 # include <stdint.h>
+
+#define BAR_COMMANDS_COUNT	2
 
 # define CLIENT_WINDOW_CAP 256
 # define MONITOR_COUNT 1
@@ -29,38 +40,40 @@
 # define MASTER_KEY				Mod4Mask 
 # define TERM_OPEN_KEY			XK_Return 
 # define MENU_OPEN_KEY			XK_Escape
-# define LOCK_OPEN_KEY			XK_l
+# define LOCK_OPEN_KEY			XK_L
 # define DMENU_OPEN_KEY			XK_space
 
-# define WINDOW_CLOSE_KEY		XK_w
-# define WINDOW_FULLSCREEN_KEY	XK_f
+# define WINDOW_CLOSE_KEY		XK_W
+# define WINDOW_FULLSCREEN_KEY	XK_F
 
-# define WM_TERMINATE_KEY		XK_m
+# define WM_TERMINATE_KEY		XK_M
 
-# define FONT                                    "GohuFont 11 Nerd Font Mono:size=12"
+# define FONT           "GohuFont 11 Nerd Font Mono:size=12"
 # define FONT_SIZE                               12
 # define FONT_COLOR                              "#ffffff"
+
+# define WINDOW_GAP								 6
 
 # define WINDOW_BORDER_WIDTH                     2
 # define WINDOW_BORDER_COLOR                     0x7c6f64
 # define WINDOW_BORDER_COLOR_ACTIVE              0xb16286
 
- struct	s_monitor {
+typedef struct s_monitor {
 	uint32_t	width;
 	uint32_t	height;
-}				t_monitor;
+}		t_monitor;
 
-typedef struct	s_keybind {
-	const char* cmd; 
-	uint32_t key;
-}				t_keybind;
+typedef struct s_keybind {
+	const char	*cmd;
+	uint32_t	key;
+}		t_keybind;
 
-typedef struct	s_vec2 {
-	float x;
-	float y;
-}				t_vec2;
+typedef struct s_vec2 {
+	float	x;
+	float	y;
+}		t_vec2;
 
-typedef struct	s_client{
+typedef struct s_client{
 	Window	win;
 	Window	frame;
 
@@ -70,9 +83,9 @@ typedef struct	s_client{
 
 	uint8_t	monitor_index;
 	int8_t	desktop_index;
-}				t_client;
+}		t_client;
 
-typedef struct	s_ywm {
+typedef struct s_ywm {
 	Display		*display;
 	Window		root;
 	int			screen;
@@ -90,8 +103,8 @@ typedef struct	s_ywm {
 	t_vec2		cursor_start_pos;
 	t_vec2		cursor_start_frame_pos;
 	t_vec2		cursor_start_frame_size;
-	
+
 	int32_t		window_gap;
-}				t_ywm;
+}		t_ywm;
 
 #endif
