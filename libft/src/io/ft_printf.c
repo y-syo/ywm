@@ -6,7 +6,7 @@
 /*   By: mmoussou <mmoussou@student.42angouleme.fr  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:46:39 by mmoussou          #+#    #+#             */
-/*   Updated: 2024/01/17 12:22:16 by mmoussou         ###   ########.fr       */
+/*   Updated: 2024/01/18 07:51:10 by mmoussou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,17 @@ static int	ft_putptr_fd(unsigned long long value, int fd)
 	if (!value)
 		return (write(1, "(nil)", 5));
 	write(1, "0x", 2);
-	return (write(1, "0x", 2) + ft_putuhex_fd(value, "0123456789abcdef", fd));
+	return (ft_putuhex_fd(value, "0123456789abcdef", fd) + 2);
+}
+
+static int	ft_putstack_fd(t_stack *stack)
+{
+	if (stack)
+	{
+		return (ft_printf("nb_init:%d | nb:%d\n", stack->nb_init, stack->nb)
+			+ ft_putstack_fd(stack->next));
+	}
+	return (0);
 }
 
 static void	print_arg(va_list argsl, char type, size_t *l)
@@ -36,6 +46,8 @@ static void	print_arg(va_list argsl, char type, size_t *l)
 		*l += ft_putuhex_fd(va_arg(argsl, unsigned int), "0123456789abcdef", 1);
 	else if (type == 'X')
 		*l += ft_putuhex_fd(va_arg(argsl, unsigned int), "0123456789ABCDEF", 1);
+	else if (type == 'S')
+		*l += ft_putstack_fd(va_arg(argsl, t_stack *));
 	else if (type)
 	{
 		*l += ft_putchar_fd('%', 1);

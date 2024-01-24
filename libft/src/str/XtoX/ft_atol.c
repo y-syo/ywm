@@ -6,7 +6,7 @@
 /*   By: mmoussou <mmoussou@student.42angoulem      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/01 22:00:18 by mmoussou          #+#    #+#             */
-/*   Updated: 2024/01/12 00:53:30 by mmoussou         ###   ########.fr       */
+/*   Updated: 2024/01/18 00:39:13 by mmoussou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 long long	ft_atol(const char *str)
 {
 	long long	r;
-	int		i;
-	char	s;
+	int			i;
+	char		s;
 
 	r = 0;
 	i = 0;

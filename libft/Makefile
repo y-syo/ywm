@@ -1,42 +1,50 @@
 # **************************************************************************** #
 #                                                                              #
-#                                                         :::    ::::::::::    #
+#                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: lbouet   <@nix.os>                        +#+  +:+       #+#         #
+#    By: mmoussou <mmoussou@student.42angouleme.fr  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/10/31 16:34:08 by kroussar          #+#    #+#              #
-#    Updated: 2024/01/12 00:49:47 by mmoussou         ###   ########.fr        #
+#    Created: 2024/01/22 07:21:18 by mmoussou          #+#    #+#              #
+#    Updated: 2024/01/24 17:50:48 by mmoussou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-CC = cc
+SHELL = bash
 
-CFLAGS = -Wall -Wextra -Werror
+CC = gcc
+
+CFLAGS = -Wall -Werror -Wextra
+
+INCLUDE = ./include
 
 NAME = libft.a
 
-INCLUDE = include
-
-# find -type f -name "*.c" | sed "s/\.\///g" | xargs -Iname echo "`printf '\t\t\t'`" name "\\"
-SRCS = 		 src/io/get_next_line.c \
+#find -type f -name "*.c" | sed "s/\.\///g" | xargs -Iname echo "`printf '\t\t\t'`" name "\\"
+SRCS =		 src/int/max.c \
+			 \
+			 src/io/get_next_line.c \
 			 src/io/ft_putnbr_fd.c \
 			 src/io/ft_putuhex_fd.c \
 			 src/io/ft_putendl_fd.c \
 			 src/io/ft_putstr_fd.c \
 			 src/io/ft_printf.c \
 			 src/io/ft_putchar_fd.c \
+			 \
 			 src/mem/ft_memchr.c \
 			 src/mem/ft_calloc.c \
 			 src/mem/ft_memcpy.c \
+			 src/mem/ft_free.c \
 			 src/mem/ft_memset.c \
 			 src/mem/ft_memcmp.c \
 			 src/mem/ft_memmove.c \
 			 src/mem/ft_bzero.c \
+			 \
 			 src/str/XtoX/ft_atol.c \
 			 src/str/XtoX/ft_itoa.c \
 			 src/str/XtoX/ft_atoi.c \
 			 src/str/XtoX/ft_ltoa.c \
+			 \
 			 src/str/ft_strchr.c \
 			 src/str/ft_strtrim.c \
 			 src/str/ft_strcmp.c \
@@ -54,11 +62,19 @@ SRCS = 		 src/io/get_next_line.c \
 			 src/str/ft_split.c \
 			 src/str/ft_strlcat.c \
 			 src/str/ft_toupper.c \
+			 \
 			 src/char/ft_isdigit.c \
 			 src/char/ft_isalnum.c \
 			 src/char/ft_isprint.c \
 			 src/char/ft_isalpha.c \
 			 src/char/ft_isascii.c \
+			 \
+			 src/stack/ft_stackadd_front.c \
+			 src/stack/ft_stackadd_back.c \
+			 src/stack/ft_stacksize.c \
+			 src/stack/ft_stacknew.c \
+			 src/stack/ft_stacklast.c \
+			 \
 			 src/linked_lists/ft_lstmap.c \
 			 src/linked_lists/ft_lstnew.c \
 			 src/linked_lists/ft_lstclear.c \
@@ -67,79 +83,48 @@ SRCS = 		 src/io/get_next_line.c \
 			 src/linked_lists/ft_lstadd_back.c \
 			 src/linked_lists/ft_lstiter.c \
 			 src/linked_lists/ft_lstlast.c \
-			 src/linked_lists/ft_lstdelone.c \
+			 src/linked_lists/ft_lstdelone.c
 
 OBJS = $(SRCS:.c=.o)
 
-COUNT	:=
-
-define LIBFT_BANNER
-\033[0;34m
-
-
-		  _____     _____  ______   ________  _________  
-		 |_   _|   |_   _||_   _ \ |_   __  ||  _   _  | 
-		   | |       | |    | |_) |  | |_ \_||_/ | | \_| 
-		   | |   _   | |    |  __'.  |  _|       | |     
-		  _| |__/ | _| |_  _| |__) |_| |_       _| |_    
-		 |________||_____||_______/|_____|     |_____|   
-                                                 
+define	LIBFT_BANNER
+\033[1;35m
+----------------------------------------------------------------
+                 __   __   __      ____   __   
+                |  | |__| |  |--. |   _| |  |_ 
+                |  | |  | |  _  | |   _| |   _|
+                |__| |__| |_____| |__|   |____|
+                       
+----------------------------------------------------------------
 
 
 \033[0m
 endef
-
 export LIBFT_BANNER
 
+all: clear $(NAME)
 
-all: banner $(NAME)
-
-banner:
+clear:
 	@printf "$$LIBFT_BANNER"
 
-$(NAME): $(OBJS)
-	@echo -n -e "\n\n󱉟 Making library.\r"
-	@ar rcs $(NAME) $(OBJS)
-	@sleep 0.2
-	@echo -n -e "󱉟 Making library..\r"
-	@sleep 0.2
-	@echo -n -e "󱉟 Making library...\r"
-	@sleep 0.2
-	@echo "󱉟 Library done !    "
-
 %.o: %.c
-	$(eval COUNT += x)
-	@echo -n -e "\r󱌣 Compiling... : | "
-	@for i in $(SRCS); do \
-		echo -n -e ""; \
-	done
-	@echo -n -e " | $<               \r"
-	@echo -n -e "󱌣 Compiling... : | "
-	@for j in $(COUNT); do \
-		echo -n ""; \
-	done
-	@$(CC) $(CFLAGS) -I ./$(INCLUDE) $< -c -o $@
+	@printf "\x1B[2K\r \x1B[1;32m[ 󱌣 ]\x1B[0m Compiling Libft Objects... : $<"
+	@$(CC) $(CFLAGS) -I$(INCLUDE) $< -c -o $@
 
-clean:
-	@for i in $(OBJS) $(BONUSOBJS); do \
-		if test -f "$$i"; then \
-			rm -f $$i; \
-			sleep 0.02; \
-			echo -n -e " Cleaned "; \
-			echo -n -e "$$i                        \r"; \
-		fi; \
-	done
-	@echo " Cleaned all objects !                     "
-	@sleep 0.1
+$(NAME): $(OBJS)
+	@printf "\x1B[2K\r \x1B[1;32m[ 󱌣 ]\x1B[0m Libft Objects Compiled."
+	@printf "\n \x1B[1;33m[ 󱉟 ]\x1B[0m Creating Libft Archive..."
+	@ar rcs $(NAME) $(OBJS)
+	@printf "\x1B[2K\r \x1B[1;33m[ 󱉟 ]\x1B[0m Libft Archive Created.\n"
 
-fclean: clean
-	@if test -f "$(NAME)"; then \
-		echo " Cleaned $(NAME)"; \
-		sleep 0.1; \
-		rm -f $(NAME); \
-	fi
+clean: clear
+	@rm -f $(OBJS)
+	@printf " \x1B[1;31m[  ]\x1B[0m Deleted Libft Objects.\n"
 
+fclean: clear clean
+	@rm -f $(NAME)
+	@printf " \x1B[1;31m[  ]\x1B[0m Deleted Libft Archive.\n"
 
-re: fclean all
+re: clear fclean all
 
-.PHONY: all fclean clean re banner
+.PHONY: all server client clean fclean re

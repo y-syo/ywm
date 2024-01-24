@@ -6,94 +6,96 @@
 /*   By: mmoussou <mmoussou@student.42angouleme.fr  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/17 05:25:52 by mmoussou          #+#    #+#             */
-/*   Updated: 2024/01/17 12:32:03 by mmoussou         ###   ########.fr       */
+/*   Updated: 2024/01/24 20:39:38 by mmoussou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ywm.h"
 
-static t_ywm	g_wm;
+static t_wm	g_ywm;
 
-void	grab_global_inputs()
+void	window_drag(int xdiff, int ydiff)
 {
-	XGrabKey(g_wm.display,XKeysymToKeycode(g_wm.display, WM_TERMINATE_KEY),MASTER_KEY, g_wm.root,false, GrabModeAsync,GrabModeAsync);
-
-	XGrabKey(g_wm.display,XKeysymToKeycode(g_wm.display, DMENU_OPEN_KEY),MASTER_KEY,g_wm.root,false, GrabModeAsync,GrabModeAsync);
-	XGrabKey(g_wm.display,XKeysymToKeycode(g_wm.display, TERM_OPEN_KEY),MASTER_KEY, g_wm.root,false, GrabModeAsync,GrabModeAsync);
-	XGrabKey(g_wm.display,XKeysymToKeycode(g_wm.display, LOCK_OPEN_KEY),MASTER_KEY, g_wm.root, false, GrabModeAsync,GrabModeAsync);
-}
-
-int handle_x_error(Display* display, XErrorEvent* e) {
-	(void)display;
-	char err_msg[1024];
-	XGetErrorText(display, e->error_code, err_msg, sizeof(err_msg));
-	ft_printf("X Error:\n\tRequest: %i\n\tError Code: %i - %s\n\tResource ID: %i\n", 
-			e->request_code, e->error_code, err_msg, (int)e->resourceid); 
-	return 0;  
-}
-
-void	ywm_init(void)
-{
-	g_wm.display = XOpenDisplay(NULL);
-	if(!g_wm.display)
+	if (g_ywm.start.button == 1)
 	{
-		ft_printf("Failed to open X Display.\n");
-		return ;
+		if (g_ywm.start.button == 3)
+			XMoveResizeWindow(g_ywm.display, g_ywm.start.subwindow,
+				g_ywm.attributes.x + xdiff, g_ywm.attributes.y + ydiff,
+				max(1, g_ywm.attributes.width + xdiff),
+				max(1, g_ywm.attributes.height + ydiff));
+		else
+			XMoveResizeWindow(g_ywm.display, g_ywm.start.subwindow,
+				g_ywm.attributes.x + xdiff, g_ywm.attributes.y + ydiff,
+				max(1, g_ywm.attributes.width),
+				max(1, g_ywm.attributes.width));
 	}
-	g_wm.client_c = 0;
-	g_wm.cursor_start_frame_size = (t_vec2){ .x = 0.0f, .y = 0.0f};
-	g_wm.cursor_start_frame_pos = (t_vec2){ .x = 0.0f, .y = 0.0f}; 
-	g_wm.cursor_start_pos = (t_vec2){ .x = 0.0f, .y = 0.0f}; 
-	g_wm.status = true;
-	g_wm.focused_monitor = MONITOR_COUNT - 1;
-	g_wm.window_gap = WINDOW_GAP;
-	g_wm.hard_focused_window_index = -1;
-	g_wm.focused_client = -1;
-	ft_memset(g_wm.focused_desktop, 0, sizeof(g_wm.focused_desktop));
-	g_wm.root = DefaultRootWindow(g_wm.display);
-	g_wm.screen = DefaultScreen(g_wm.display);
-
-	const char *name = "ywm";
-	XChangeProperty(g_wm.display, g_wm.root,
-			XInternAtom(g_wm.display, "_NET_WM_NAME", False),
-			XInternAtom(g_wm.display, "UTF8_STRING", False),
-			8, PropModeReplace, (const unsigned char *)name, ft_strlen(name));
-	XFlush(g_wm.display);
-
-	XSelectInput(g_wm.display, g_wm.root, SubstructureRedirectMask | SubstructureNotifyMask); 
-	XSync(g_wm.display, false);
-
-	Cursor cursor = XcursorLibraryLoadCursor(g_wm.display, "arrow");
-	XDefineCursor(g_wm.display, g_wm.root, cursor);
-	XSetErrorHandler(handle_x_error);
-
-	XSetWindowAttributes attributes;
-	attributes.event_mask = ButtonPress | KeyPress | SubstructureRedirectMask | SubstructureNotifyMask | PropertyChangeMask;
-	XChangeWindowAttributes(g_wm.display, g_wm.root, CWEventMask, &attributes);
-
-	grab_global_inputs();
-}
-
-void ywm_terminate()
-{
-	XCloseDisplay(g_wm.display);
-}
-
-void* update_ui() {
-	while(true)
+	else
 	{
-		usleep(60 * 1000000);
-		XFlush(g_wm.display);
+		if (g_ywm.start.button == 3)
+			XMoveResizeWindow(g_ywm.display, g_ywm.start.subwindow,
+				g_ywm.attributes.x + 0, g_ywm.attributes.y + 0,
+				max(1, g_ywm.attributes.width + xdiff),
+				max(1, g_ywm.attributes.height + ydiff));
+		else
+			XMoveResizeWindow(g_ywm.display, g_ywm.start.subwindow,
+				g_ywm.attributes.x + 0, g_ywm.attributes.y + 0,
+				max(1, g_ywm.attributes.width),
+				max(1, g_ywm.attributes.width));
 	}
-	return NULL;
+}
+
+void	wm_loop(void)
+{
+	int		xdiff;
+	int		ydiff;
+
+	while (69 != 420)
+	{
+		ft_printf("loop\n");
+		XNextEvent(g_ywm.display, &(g_ywm.event));
+		ft_printf("caca\n");
+		if (g_ywm.event.type == KeyPress)
+			break ;
+		if (g_ywm.event.type == ButtonPress
+			&& g_ywm.event.xbutton.subwindow != None)
+		{
+			XGetWindowAttributes(g_ywm.display, g_ywm.event.xbutton.subwindow,
+				&g_ywm.attributes);
+			g_ywm.start = g_ywm.event.xbutton;
+		}
+		else if (g_ywm.event.type == MotionNotify
+			&& g_ywm.start.subwindow != None)
+		{
+			xdiff = g_ywm.event.xbutton.x_root - g_ywm.start.x_root;
+			ydiff = g_ywm.event.xbutton.y_root - g_ywm.start.y_root;
+			window_drag(xdiff, ydiff);
+		}
+		else if (g_ywm.event.type == ButtonRelease)
+			g_ywm.start.subwindow = None;
+	}
 }
 
 int	main(void)
 {
-	ywm_init();
-	pthread_t ui_thread;
-	pthread_create(&ui_thread, NULL, update_ui, NULL);
-
-	ywm_terminate();
+	g_ywm.display = XOpenDisplay(NULL);
+	if (!g_ywm.display)
+	{
+		ft_printf("Cant open display.");
+		return (1);
+	}
+	g_ywm.root = XDefaultRootWindow(g_ywm.display);
+	XGrabKey(g_ywm.display, XKeysymToKeycode(g_ywm.display,
+			XStringToKeysym("F1")), Mod4Mask, g_ywm.root,
+		false, GrabModeAsync, GrabModeAsync);
+	XGrabButton(g_ywm.display, 1, Mod4Mask, g_ywm.root,
+		false, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
+		GrabModeAsync, GrabModeAsync, None, None);
+	XGrabButton(g_ywm.display, 3, Mod4Mask, g_ywm.root,
+		false, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
+		GrabModeAsync, GrabModeAsync, None, None);
+	g_ywm.start.subwindow = None;
+	ft_printf("ywm Initialized.\n");
+	wm_loop();
+	XCloseDisplay(g_ywm.display);
 	return (0);
 }
